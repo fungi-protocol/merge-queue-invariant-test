@@ -1,0 +1,27 @@
+name: Queue experiment
+on:
+  push:
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+permissions:
+  contents: read
+jobs:
+  invariant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Record graph and verify integration ancestry
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.merge_group.base_sha || github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "event=$EVENT base=$BASE pr_head=$PR_HEAD head=$(git rev-parse HEAD)"
+          git log --graph --oneline -12
+          if [ -n "$BASE" ]; then
+            git merge-base --is-ancestor "$BASE" HEAD
+            git rev-list --reverse "$BASE..HEAD"
+          fi
