@@ -10,6 +10,9 @@ jobs:
   invariant:
     runs-on: ubuntu-latest
     steps:
+      - name: Hold merge-group build for queue batching
+        if: github.event_name == 'merge_group'
+        run: sleep 90
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
