@@ -28,3 +28,5 @@ jobs:
             git merge-base --is-ancestor "$BASE" HEAD
             git rev-list --reverse "$BASE..HEAD"
           fi
+      - name: Check content invariant
+        run: bash test.sh
